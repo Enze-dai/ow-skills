@@ -19,6 +19,21 @@ PLATFORMS = {
         "publish_api": "http://www.owshanghai.com/api/posts",
         "type": "api"
     },
+    "wechat_mp": {
+        "name": "微信公众号",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
+    "wechat_moments": {
+        "name": "微信朋友圈",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
+    "wechat_channels": {
+        "name": "微信视频号",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
     "douyin": {
         "name": "抖音",
         "skill": "douyin-publish",
@@ -132,6 +147,18 @@ def generate_product_content(product_name, specs, price, shop_link, platform):
         "ow": {
             "content": f"【供应】{product_name}\n\n规格：{specs}\n价格：{price}\n店铺：{shop_link}\n\n有意者请联系！",
             "type": "offer"
+        },
+        "wechat_mp": {
+            "title": f"【供应】{product_name}",
+            "content": f"商品名称：{product_name}\n\n规格参数：\n{specs}\n\n💰 价格：{price}\n\n✅ 正品保证\n✅ 快速发货\n✅ 售后无忧\n\n🔗 购买链接：{shop_link}\n\n欢迎咨询购买！",
+            "type": "图文消息"
+        },
+        "wechat_moments": {
+            "content": f"✨ {product_name}\n\n{specs}\n\n💰 价格：{price}\n\n正品保证，欢迎咨询！\n\n👉 购买链接私信获取"
+        },
+        "wechat_channels": {
+            "title": f"出售{product_name}",
+            "content": f"✨ {product_name}\n\n{specs}\n💰 价格：{price}\n\n正品保证，购买链接在主页！#好物推荐 #{product_name}"
         },
         "douyin": {
             "title": f"出售{product_name}",

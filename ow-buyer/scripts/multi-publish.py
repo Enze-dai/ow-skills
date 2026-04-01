@@ -18,6 +18,21 @@ PLATFORMS = {
         "api": "http://www.owshanghai.com/api/posts",
         "type": "api"
     },
+    "wechat_mp": {
+        "name": "微信公众号",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
+    "wechat_moments": {
+        "name": "微信朋友圈",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
+    "wechat_channels": {
+        "name": "微信视频号",
+        "skill": "social-media-publish",
+        "type": "skill"
+    },
     "douyin": {
         "name": "抖音",
         "skill": "douyin-publish",
@@ -64,6 +79,18 @@ def generate_content(product, budget, platform):
         "ow": {
             "content": f"求购：{product}，预算{budget}，有货的卖家请联系！",
             "type": "request"
+        },
+        "wechat_mp": {
+            "title": f"【求购】{product}",
+            "content": f"求购{product}，预算{budget}左右。\n\n要求：\n1. 正品保证\n2. 来源清晰\n3. 价格合理\n\n有货的商家请联系，长期合作优先！",
+            "type": "图文消息"
+        },
+        "wechat_moments": {
+            "content": f"【求购】{product}\n预算{budget}左右\n有靠谱渠道的朋友私信我！🙏"
+        },
+        "wechat_channels": {
+            "title": f"求购{product}",
+            "content": f"急求{product}！预算{budget}，有渠道的朋友私信！#求购 #采购"
         },
         "douyin": {
             "title": f"求购{product}",
