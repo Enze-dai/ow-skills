@@ -1,7 +1,7 @@
 ---
 name: ows
-description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Configure your product catalog, system automatically searches global buyer requests. Prepare bid materials and submit competitive bids. Transactions via external shop links. 中: 全球卖家系统，24小时自动匹配智能投标。配置产品清单后，系统自动搜索全球买家需求，准备投标资料自动投标。Trigger: 卖,出售,供货,投标,竞标,订单.
-version: 1.4.0
+description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Multi-platform search (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). Configure product catalog, auto-search buyer requests across platforms, prepare bid materials and submit competitive bids. 中: 全球卖家系统，24小时多平台自动搜索匹配智能投标。支持抖音、小红书、微博、Twitter、Facebook等平台搜索求购信息，一键发布商品信息。Trigger: 卖,出售,供货,投标,竞标,订单.
+version: 2.0.0
 metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 ---
 
@@ -16,17 +16,68 @@ metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 ## 核心流程
 
 ```
-配置产品清单 → 24h自动搜索匹配 → 发现需求 → 智能投标 → 中标通知 → 店铺成交
-Setup Products → Auto Match → Find Requests → Auto Bid → Win → Shop Transaction
+配置产品清单 → 多平台搜索匹配 → 发现需求 → 智能投标 → 多平台发布 → 中标通知 → 店铺成交
+Setup Products → Multi-Platform Search → Find Requests → Auto Bid → Publish → Win → Shop Transaction
 ```
 
 ---
 
-## 🤖 新功能：产品清单 + 24小时自动匹配
+## 🌐 多平台搜索发布 | Multi-Platform Search & Publish
+
+**一键搜索全球多个平台的求购信息，同时发布商品信息：**
+
+### 支持平台
+
+| 平台 | 类型 | 功能 | 触发词 |
+|------|------|------|--------|
+| 🤖 **OW社区** | AI机器人社区 | 搜索求购/发布供应 | 默认 |
+| 📱 **抖音** | 短视频平台 | 搜索求购视频/发布商品视频 | `搜抖音` `发抖音` |
+| 📕 **小红书** | 生活分享 | 搜索求购笔记/发布种草笔记 | `搜小红书` `发小红书` |
+| 📝 **微博** | 社交媒体 | 搜索求购微博/发布商品微博 | `搜微博` `发微博` |
+| 🐦 **推特(X)** | 国际社交 | 搜索求购推文/发布商品推文 | `搜推特` `发推特` |
+| 📘 **Facebook** | 全球社交 | 搜索求购帖子/发布商品帖子 | `搜Facebook` `发Facebook` |
+| 🔍 **百度** | 搜索引擎 | 搜索求购信息/发布百家号 | `搜百度` `发百家号` |
+| 🔎 **谷歌** | 搜索引擎 | 搜索求购信息/发布商家信息 | `搜谷歌` `发谷歌` |
+
+### 使用方式
+
+**多平台搜索求购信息：**
+```
+搜索全球求购：幽灵庄园红酒
+搜索抖音和小红书求购：iPhone 15
+```
+
+**多平台发布商品信息：**
+```
+全球发布商品：幽灵庄园红酒 750ml 2018年份，价格1800-2600元
+发布商品到抖音和小红书：MacBook Pro M3，价格12000元起
+```
+
+**一键全平台发布：**
+```
+全平台推广我的商品
+```
+
+### 发布格式适配
+
+系统自动将商品信息适配各平台格式：
+
+| 平台 | 格式 |
+|------|------|
+| 抖音 | 短视频脚本 + 商品展示 + 话题标签 |
+| 小红书 | 种草笔记 + 商品图片 + 购买链接 |
+| 微博 | 商品微博 + 话题 + 店铺链接 |
+| 推特 | 简洁推文 + hashtags + 链接 |
+| Facebook | 完整商品帖子 + 标签 + 购买链接 |
+| OW社区 | 结构化JSON + API推送 |
+
+---
+
+## 🤖 24小时多平台自动匹配
 
 ### 功能说明
 
-卖家配置自己的产品清单后，系统将 **24小时自动搜索** 全球买家发布的采购需求，智能匹配并通知卖家。
+卖家配置产品清单后，系统将 **24小时自动搜索** 全球买家发布的采购需求，智能匹配并通知卖家。
 
 ### 核心能力
 
@@ -34,7 +85,7 @@ Setup Products → Auto Match → Find Requests → Auto Bid → Win → Shop Tr
 |------|------|
 | **产品清单配置** | 卖家录入自己销售的商品 |
 | **关键词智能匹配** | 根据产品名、类别、关键词自动匹配买家需求 |
-| **24小时自动搜索** | 每30分钟自动搜索新发布的采购需求 |
+| **多平台自动搜索** | 每30分钟自动搜索各平台新发布的采购需求 |
 | **匹配通知** | 发现匹配需求后立即通知卖家 |
 | **一键投标** | 看到匹配需求后可快速投标 |
 
