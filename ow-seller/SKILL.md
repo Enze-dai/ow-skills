@@ -1,7 +1,7 @@
 ---
 name: ows
 description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Multi-platform search (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). Configure product catalog, auto-search buyer requests across platforms, prepare bid materials and submit competitive bids. 中: 全球卖家系统，24小时多平台自动搜索匹配智能投标。支持抖音、小红书、微博、Twitter、Facebook等平台搜索求购信息，一键发布商品信息。Trigger: 卖,出售,供货,投标,竞标,订单.
-version: 2.0.0
+version: 2.2.0
 metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 ---
 
@@ -13,11 +13,76 @@ metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 
 ---
 
+## ⚡ 安装引导 | Setup Wizard
+
+**安装技能后，请立即配置产品清单，让系统开始为你搜索商机！**
+
+### 快速配置（仅需1分钟）
+
+```bash
+python3 scripts/setup_wizard.py --quick
+```
+
+只需填写：
+- 店铺名称
+- 产品类别
+
+即可开始自动搜索匹配！
+
+### 完整配置（提高中标率）
+
+```bash
+python3 scripts/setup_wizard.py
+```
+
+按评标五维度引导配置，配置越完整，中标率越高：
+
+| 维度 | 权重 | 配置内容 | 作用 |
+|------|------|----------|------|
+| 💰 **价格竞争力** | 50% | 产品定价、成本、利润空间 | 提供最优报价 |
+| 📜 **真品证明** | 20% | 营业执照、代理权、授权书 | 提高信任度 |
+| 📸 **商品展示** | 15% | 产品图片(3张)、视频(30秒) | 让买家放心 |
+| 🚚 **到货时间** | 5% | 物流方式、发货区域 | 承诺时效 |
+| 📋 **交易记录** | 10% | 店铺链接、历史成交 | 提升信誉 |
+
+### ⚠️ 必填项
+
+- **产品类别** - 至少填写一个类别才能开始匹配
+
+### ✅ 建议配置
+
+- 全部五维度配置 → 中标率提升50%+
+- 上传资质文件链接 → 真品证明得分+20%
+- 提供店铺链接 → 信誉得分+10%
+
+### 📍 发货区域配置
+
+系统会根据买家IP判断其所在区域，自动排除不可发货区域的买家：
+
+```
+【国内发货】
+✅ 全国发货 → 匹配所有中国买家
+✅ 区域发货 → 只匹配指定区域买家（华东/华南/华北等）
+
+【特殊区域】
+❌ 不发港澳台 → 自动排除港澳台买家
+❌ 不发海外 → 自动排除海外买家
+✅ 开通海外 → 指定可发货国家
+```
+
+配置后，系统自动：
+1. 识别买家IP所在区域
+2. 判断是否在发货范围内
+3. 排除不可发货区域的买家
+4. 只通知可成交的商机
+
+---
+
 ## 核心流程
 
 ```
-配置产品清单 → 多平台搜索匹配 → 发现需求 → 智能投标 → 多平台发布 → 中标通知 → 店铺成交
-Setup Products → Multi-Platform Search → Find Requests → Auto Bid → Publish → Win → Shop Transaction
+安装引导 → 配置产品清单 → 配置发货区域 → 多平台搜索匹配 → 发现商机 → 智能投标 → 中标 → 店铺成交
+Setup → Products → Regions → Multi-Platform Search → Find Requests → Auto Bid → Win → Shop Transaction
 ```
 
 ---
@@ -111,81 +176,162 @@ Setup Products → Multi-Platform Search → Find Requests → Auto Bid → Publ
 
 ---
 
-## 📦 产品清单配置
+## 📦 产品清单配置（按评标五维度）
 
 ### 配置文件位置
 
 ```
-{baseDir}/state/product_catalog.json
+{baseDir}/state/product_catalog.json  # 产品清单
+{baseDir}/state/region_config.json    # 发货区域配置
 ```
 
-### 配置格式
+### ⚠️ 必填项
+
+- **产品类别 (category)** - 至少需要配置一个类别才能开始匹配
+
+### ✅ 五维度完整配置（提高中标率）
 
 ```json
 {
   "seller_id": "seller-xxx",
   "seller_name": "幽灵庄园红酒专卖店",
+  "contact": "微信: xxx",
+  
+  // 产品清单
   "products": [
     {
       "product_id": "PROD-001",
+      
+      // 【必填】基本信息
       "name": "幽灵庄园红酒",
-      "category": "红酒",
-      "brand": "幽灵庄园",
-      "keywords": ["红酒", "葡萄酒", "酒", "洋酒"],
-      "specs": {
-        "capacity": "750ml",
-        "years": ["2018", "2019", "2020"],
-        "origin": "法国"
+      "category": "红酒",          // ⚠️ 必填！至少要有类别
+      "keywords": ["红酒", "葡萄酒", "幽灵庄园"],
+      "active": true,
+      
+      // 【💰 价格竞争力 - 权重50%】
+      "price_range": [1500, 5000],  // 售价区间
+      "cost": 1500,                 // 成本价（计算利润空间）
+      "stock": 100,                 // 库存数量
+      
+      // 【📜 真品证明 - 权重20%】
+      "auth_docs": [
+        "business_license",         // 营业执照
+        "agency_cert",              // 代理权证明
+        {"type": "auth_letter", "url": "https://..."}  // 授权书链接
+      ],
+      
+      // 【📸 商品展示 - 权重15%】
+      "images": [
+        "https://xxx.com/img1.jpg",  // 图片1
+        "https://xxx.com/img2.jpg",  // 图片2
+        "https://xxx.com/img3.jpg"   // 图片3（最多3张）
+      ],
+      "video": "https://xxx.com/video.mp4",  // 30秒展示视频
+      
+      // 【🚚 到货时间 - 权重5%】
+      "delivery": {
+        "methods": ["顺丰", "京东"],
+        "default_days": 3,
+        "remote_days": 5
       },
-      "price_range": [1500, 5000],
-      "cost": 1500,
-      "stock": 100,
-      "auth_docs": ["business_license", "agency_cert"],
+      
+      // 【📋 交易记录 - 权重10%】
       "shop_links": [
         {
           "platform": "淘宝",
-          "url": "https://shop123456.taobao.com"
+          "url": "https://shop123456.taobao.com",
+          "shop_name": "幽灵庄园旗舰店",
+          "rating": 4.9,
+          "verified": true
         }
       ],
-      "active": true
-    },
-    {
-      "product_id": "PROD-002",
-      "name": "拉菲传奇波尔多",
-      "category": "红酒",
-      "brand": "拉菲",
-      "keywords": ["拉菲", "红酒", "波尔多", "法国红酒"],
-      "specs": {
-        "capacity": "750ml",
-        "years": ["2016", "2017", "2018"],
-        "origin": "法国波尔多"
-      },
-      "price_range": [3000, 8000],
-      "cost": 2500,
-      "stock": 50,
-      "auth_docs": ["business_license", "agency_cert", "auth_letter"],
-      "shop_links": [
-        {
-          "platform": "淘宝",
-          "url": "https://shop123456.taobao.com"
-        }
-      ],
-      "active": true
+      "transaction_history": {
+        "total_sales": 500,
+        "good_rate": 0.98
+      }
     }
   ],
+  
+  // 发货区域配置（新增）
+  "ship_regions": {
+    "enabled": ["中国-全国", "华东", "华南"],  // 可发货区域
+    "disabled": ["港澳台", "海外"],           // 不可发货区域
+    "international": {
+      "enabled": false,
+      "countries": []
+    }
+  },
+  
+  // 物流配置
+  "logistics": {
+    "methods": ["顺丰", "京东"],
+    "default_delivery_days": 3
+  },
+  
+  // 自动匹配配置
   "auto_match": {
     "enabled": true,
     "scan_interval_minutes": 30,
-    "price_match_tolerance": 0.3,
-    "keywords_weight": 0.6,
-    "category_weight": 0.4
+    "min_match_score": 0.3,
+    "notify_on_match": true,
+    "filter_by_region": true      // 📍 按发货区域过滤买家
   }
 }
 ```
 
 ---
 
-## ⚙️ 自动匹配规则
+## 📍 发货区域配置
+
+### 区域判断机制
+
+系统通过买家IP地址判断其所在区域：
+
+| IP来源 | 区域判断 |
+|--------|----------|
+| 中国IP段 | 中国（华东/华南/华北等） |
+| 香港IP | 香港 |
+| 台湾IP | 台湾 |
+| 海外IP | 美国/日本/韩国/欧洲等 |
+
+### 配置示例
+
+```json
+{
+  "ship_regions": {
+    // 可发货区域
+    "enabled": [
+      "中国-全国",     // 全国发货，匹配所有中国买家
+      "华东",         // 或指定区域
+      "华南"
+    ],
+    
+    // 不可发货区域（自动排除）
+    "disabled": [
+      "港澳台",       // 不发港澳台
+      "海外"          // 不发海外
+    ],
+    
+    // 海外发货（可选开通）
+    "international": {
+      "enabled": true,
+      "countries": ["美国", "日本", "韩国"]  // 指定可发货国家
+    }
+  }
+}
+```
+
+### 区域匹配流程
+
+```
+买家发布求购 → 系统获取买家IP → 判断买家区域 → 检查发货范围 → 
+├─ 区域可发货 → 匹配成功，通知卖家
+└─ 区域不可发货 → 自动排除，不通知
+```
+
+---
+
+## ⚙️ 自动匹配规则（增强版）
 
 ### 匹配维度
 

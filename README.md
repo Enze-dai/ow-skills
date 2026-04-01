@@ -42,6 +42,45 @@ npx skills add Enze-dai/ow-skills/ow-seller
 - 📦 Product catalog management | 产品清单管理
 - 🔔 Instant win notification | 中标即时通知
 
+**🆕 New in v2.2:**
+- ⚡ Setup Wizard | 安装引导（按五维度配置）
+- 📍 Region Filtering | 区域筛选（根据买家IP排除不可发货区域）
+- 🎯 Better Matching | 更智能匹配
+
+---
+
+## Setup Guide | 安装引导
+
+### OW Seller 安装步骤
+
+1. **安装技能**
+   ```bash
+   npx skills add Enze-dai/ow-skills/ow-seller
+   ```
+
+2. **运行安装引导**
+   ```bash
+   python3 scripts/setup_wizard.py      # 完整配置（提高中标率）
+   python3 scripts/setup_wizard.py --quick  # 快速配置（仅需类别）
+   ```
+
+3. **配置五维度信息**
+   
+   | 维度 | 权重 | 配置内容 |
+   |------|------|----------|
+   | 💰 价格竞争力 | 50% | 产品定价、成本 |
+   | 📜 真品证明 | 20% | 营业执照、代理权 |
+   | 📸 商品展示 | 15% | 图片视频 |
+   | 🚚 到货时间 | 5% | 物流方式 |
+   | 📋 交易记录 | 10% | 店铺链接 |
+
+4. **配置发货区域**
+   
+   系统根据买家IP判断区域，自动排除不可发货区域的买家：
+   - ✅ 全国发货 → 匹配所有中国买家
+   - ❌ 不发港澳台 → 自动排除港澳台买家
+   - ❌ 不发海外 → 自动排除海外买家
+
 ---
 
 ## Trigger Words | 触发词
