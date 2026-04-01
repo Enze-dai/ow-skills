@@ -1,7 +1,7 @@
 ---
 name: ow
 description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally across multiple platforms (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). 中: 全球采购系统，AI智能评标。五维度评分，多平台发布采购需求，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
-version: 2.0.0
+version: 2.1.0
 metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
 ---
 
@@ -16,8 +16,88 @@ metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
 ## 核心流程 | Core Flow
 
 ```
-发布需求 → 多平台同步 → 接收投标 → 智能评标 → 列出前三 → 确认中标 → 外部店铺交易
-Publish → Multi-Platform → Receive Bids → Evaluate → Top 3 → Confirm → External Shop
+发布需求 → 多平台同步 → 接收投标 → 🔔通知买家机器人 → 智能评标 → 🔔评标提醒 → 列出前三 → 确认中标 → 🔔中标提醒 → 外部店铺交易
+Publish → Multi-Platform → Receive Bids → Notify Buyer → Evaluate → Notify → Top 3 → Confirm → Notify → Shop
+```
+
+---
+
+## 🔔 中标提醒系统 | Win Notification System
+
+**买家机器人自动提醒买家用户，无需手动检查**
+
+### 三种提醒时机
+
+| 提醒类型 | 触发时机 | 提醒内容 |
+|----------|----------|----------|
+| 🔔 **新投标提醒** | 收到卖家投标时 | 供应商名称、报价、承诺时效 |
+| 📊 **评标完成提醒** | 评标计算完成时 | 前三名供应商详情、综合得分 |
+| 🎉 **中标确认提醒** | 买家确认中标时 | 中标供应商、价格、店铺链接 |
+
+### 提醒流程
+
+```
+卖家投标 → 买家机器人收到 → 
+├─ 🔔 立即提醒买家："收到新投标"
+│
+评标截止 → 系统自动评标 → 
+├─ 📊 提醒买家："评标完成，前三名如下..."
+│
+买家确认 → 系统记录中标 → 
+├─ 🎉 提醒买家："已确认中标供应商，请前往店铺下单"
+```
+
+### 使用方式
+
+**买家机器人自动处理：**
+
+当卖家投标时，买家机器人会自动：
+1. 读取通知文件：`{baseDir}/state/notifications/`
+2. 检测到新通知后提醒买家用户
+3. 显示投标详情或评标结果
+
+**买家用户操作：**
+
+收到评标提醒后，回复：
+```
+确认中标 REQ-xxx 第1名
+```
+
+系统将：
+1. 记录中标供应商
+2. 通知买家机器人最终结果
+3. 提供店铺链接供下单
+
+### 通知文件格式
+
+**新投标通知** (`{req_id}_new_bid.json`)：
+```json
+{
+  "type": "new_bid",
+  "req_id": "REQ-20260401-xxx",
+  "message": "🔔 新投标提醒\n供应商：xxx\n报价：¥xxx",
+  "delivered": true
+}
+```
+
+**评标完成通知** (`{req_id}_evaluation.json`)：
+```json
+{
+  "type": "evaluation",
+  "req_id": "REQ-20260401-xxx",
+  "message": "📊 评标完成\n🏆 第1名：xxx 综合得分87分...",
+  "delivered": true
+}
+```
+
+**中标确认通知** (`{req_id}_winner.json`)：
+```json
+{
+  "type": "winner",
+  "req_id": "REQ-20260401-xxx",
+  "message": "🎉 中标确认\n供应商：xxx\n请前往店铺下单",
+  "delivered": true
+}
 ```
 
 ---

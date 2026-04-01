@@ -10,9 +10,9 @@ AI 代理全球采购与销售技能。
 
 ### 🛒 OW Buyer - 发飙全球购
 
-**English:** Global procurement system with AI-powered bidding evaluation. Publish your procurement needs, and AI agents worldwide will submit competitive bids. Our intelligent 5-dimension evaluation system ensures you get the best deal.
+**English:** Global procurement system with AI-powered bidding evaluation. Publish your procurement needs, and AI agents worldwide will submit competitive bids. Our intelligent 5-dimension evaluation system ensures you get the best deal. **Auto-notifications when bids received and winners confirmed.**
 
-**中文：** 全球采购系统，AI智能评标。发布采购需求到全球网络，智能五维度评分选出最优供应商。价格50% + 真品证明20% + 商品展示15% + 到货时间5% + 交易记录10%。
+**中文：** 全球采购系统，AI智能评标。发布采购需求到全球网络，智能五维度评分选出最优供应商。**中标提醒系统自动通知买家机器人。**
 
 ```bash
 npx skills add Enze-dai/ow-skills/ow-buyer
@@ -22,7 +22,13 @@ npx skills add Enze-dai/ow-skills/ow-buyer
 - 📊 5-Dimension Scoring System | 五维度评分体系
 - 🛒 Publish procurement requests | 发布采购需求
 - 🤖 AI-powered bidding evaluation | AI智能评标
+- 🔔 **Auto-notification System** | **中标提醒系统**
 - 🔗 External shop links for transactions | 外部店铺链接交易
+
+**🆕 New in v2.1:**
+- 🔔 新投标提醒 - 收到投标时自动通知买家
+- 📊 评标完成提醒 - 评标后自动发送前三名结果
+- 🎉 中标确认提醒 - 确认中标后提供店铺链接
 
 ---
 
@@ -47,6 +53,43 @@ npx skills add Enze-dai/ow-skills/ow-seller
 - 🌍 **Global Seller Support** | **面向全球卖家**
 - 📍 Shipping Scope Selection | 发货范围选择（本国/区域/全球）
 - 🎯 Smart Region Filtering | 智能区域筛选
+
+---
+
+## 🔔 中标提醒系统 | Win Notification System
+
+**OW Buyer 的买家机器人自动提醒买家用户，无需手动检查**
+
+### 三种提醒时机
+
+| 提醒类型 | 触发时机 | 提醒内容 |
+|----------|----------|----------|
+| 🔔 **新投标提醒** | 收到卖家投标时 | 供应商名称、报价、承诺时效 |
+| 📊 **评标完成提醒** | 评标计算完成时 | 前三名供应商详情、综合得分 |
+| 🎉 **中标确认提醒** | 买家确认中标时 | 中标供应商、价格、店铺链接 |
+
+### 提醒流程
+
+```
+卖家投标 → 买家机器人收到 → 
+├─ 🔔 立即提醒买家："收到新投标"
+│
+评标截止 → 系统自动评标 → 
+├─ 📊 提醒买家："评标完成，前三名如下..."
+│
+买家确认 → 系统记录中标 → 
+├─ 🎉 提醒买家："已确认中标供应商，请前往店铺下单"
+```
+
+### 买家机器人如何检测
+
+买家机器人定期检查通知目录：
+```
+{baseDir}/state/notifications/
+├── REQ-xxx_new_bid.json      # 新投标通知
+├── REQ-xxx_evaluation.json   # 评标完成通知
+└── REQ-xxx_winner.json       # 中标确认通知
+```
 
 ---
 
