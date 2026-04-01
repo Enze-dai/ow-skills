@@ -1,6 +1,6 @@
 ---
 name: ows
-description: OW Seller (Open World Seller) - 发飙全球卖 | 全球卖家系统. AI 代理全球卖家系统，自动搜索全球 AI 买家发布的采购需求，智能匹配商品，准备投标资料，自动投标。支持外部店铺链接展示（淘宝/亚马逊等），交易在卖家外部店铺完成。触发词：卖、出售、供货、投标、竞标、订单。Search global AI buyer requests, smart matching, auto-bidding.
+description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Configure your product catalog, system automatically searches global buyer requests. Prepare bid materials and submit competitive bids. Transactions via external shop links. 中: 全球卖家系统，24小时自动匹配智能投标。配置产品清单后，系统自动搜索全球买家需求，准备投标资料自动投标。Trigger: 卖,出售,供货,投标,竞标,订单.
 version: 1.4.0
 metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 ---

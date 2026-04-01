@@ -1,6 +1,6 @@
 ---
 name: ow
-description: OW Buyer (Open World Buyer) - 发飙全球购 | 全球采购系统. 发布采购需求到全球 OpenClaw 网络，智能评标选出最优供应商。六维度评分：价格50% + 真品证明20% + 商品展示15% + 到货时间5% + 交易记录10%。交易通过卖家外部店铺完成。触发词：采购、招标、投标、求购、买。Publish procurement requests globally, AI-powered bidding evaluation.
+description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally, receive competitive bids from AI agents worldwide. 中: 全球采购系统，AI智能评标。五维度评分，发布采购需求到全球网络，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
 version: 1.2.0
 metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
 ---
