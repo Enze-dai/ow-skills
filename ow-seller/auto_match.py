@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
-OW Seller 自动搜索匹配脚本 V2
-增强：区域匹配功能 - 根据买家IP判断区域，排除不可发货区域
+OW Seller 自动搜索匹配脚本 V2.2
+全球卖家版本 - 卖家自己选择发货区域（本国/全球/指定国家）
 
 功能：
 1. 搜索OW社区求购信息
 2. 智能匹配产品清单
-3. 区域匹配 - 判断买家IP区域，排除不可发货区域
+3. 区域匹配 - 根据卖家配置的发货范围筛选买家
 4. 通知卖家新商机
+
+发货模式：
+- local: 本国发货，只匹配本国买家
+- regional: 区域发货，匹配指定国家买家
+- global: 全球发货，匹配任何国家买家
 """
 
 import json
@@ -116,48 +121,58 @@ def get_region_from_ip(ip_address):
     
     return "海外"
 
-def can_ship_to_region(buyer_region, region_config):
-    """判断是否可发货到买家区域"""
+def can_ship_to_region(buyer_region, region_config, seller_country=None):
+    """判断是否可发货到买家区域（全球卖家视角）"""
     ship_regions = region_config.get("ship_regions", {})
+    mode = ship_regions.get("mode", "local")  # local/regional/global
+    
     enabled = ship_regions.get("enabled", [])
     disabled = ship_regions.get("disabled", [])
+    countries = ship_regions.get("countries", [])
     
     # 检查是否在禁发列表
     for dis in disabled:
         if buyer_region in dis or dis in buyer_region:
-            return False, f"不可发货到 {buyer_region}"
+            return False, f"不可发货到 {buyer_region} | Cannot ship to {buyer_region}"
     
-    # 检查是否在可发列表
+    # 根据发货模式判断
+    if mode == "global":
+        # 全球发货模式 - 接受所有买家（除非在禁发列表）
+        return True, f"全球发货，可发货到 {buyer_region} | Global shipping"
+    
+    elif mode == "local":
+        # 本国发货模式 - 只接受本国买家
+        if buyer_region == seller_country:
+            return True, f"本国发货，可发货到 {buyer_region}"
+        # 检查enabled列表
+        for en in enabled:
+            if buyer_region in en or en in buyer_region:
+                return True, f"可发货到 {buyer_region}"
+        return False, f"仅本国发货，不可发货到 {buyer_region}"
+    
+    elif mode == "regional":
+        # 区域发货模式 - 检查是否在指定国家列表
+        for country in countries:
+            if buyer_region in country or country in buyer_region:
+                return True, f"区域发货，可发货到 {buyer_region}"
+        return False, f"不在发货范围内 | Not in shipping region"
+    
+    # 默认：检查enabled列表
     for en in enabled:
-        if "全国" in en and "中国" in buyer_region:
-            return True, f"可发货到 {buyer_region}"
         if buyer_region in en or en in buyer_region:
             return True, f"可发货到 {buyer_region}"
     
-    # 海外特殊处理
-    if buyer_region in ["海外", "美国", "日本", "韩国", "欧洲", "美国/欧洲"]:
-        international = ship_regions.get("international", {})
-        if international.get("enabled"):
-            countries = international.get("countries", [])
-            if buyer_region in countries or not countries:
-                return True, f"可发货到 {buyer_region}"
-        return False, f"未开通海外发货"
+    # 如果区域未知，根据模式判断
+    if buyer_region == "未知" or buyer_region == "Unknown":
+        if mode == "global":
+            return True, f"全球发货，默认可发货（买家区域未知）"
+        elif mode == "local":
+            # 本国发货模式下，未知区域默认不可发货
+            return False, f"仅本国发货，买家区域未知"
+        else:
+            return False, f"买家区域未知，无法判断发货范围"
     
-    # 默认：如果配置了全国发货，中国区域都可发
-    if "中国-全国" in enabled and "中国" in buyer_region:
-        return True, f"可发货到 {buyer_region}"
-    
-    # 【新增】如果区域未知但配置了全国发货，默认可发货
-    # 原因：OW社区主要面向中国用户，未知IP通常是中国买家
-    if buyer_region == "未知" or buyer_region == "未知区域":
-        if "中国-全国" in enabled:
-            return True, f"默认可发货（全国发货，买家区域未知）"
-        # 检查是否有其他中国区域发货配置
-        for en in enabled:
-            if "中国" in en:
-                return True, f"默认可发货（配置了中国区域发货）"
-    
-    return False, f"区域不在发货范围内"
+    return False, f"不在发货范围内 | Not in shipping range"
 
 def search_requests():
     """搜索求购信息"""
@@ -195,23 +210,38 @@ def calculate_match_score(content, product, config):
     return score, matched_keywords
 
 def run_match():
-    """执行匹配（增强区域判断）"""
+    """执行匹配（全球卖家视角）"""
     catalog = load_catalog()
     region_config = load_region_config()
     config = catalog.get('auto_match', {})
     
+    # 获取卖家所在国家
+    seller_country = catalog.get('seller_country', '') or region_config.get('seller_country', '')
+    
+    # 发货模式
+    ship_mode = region_config.get('ship_regions', {}).get('mode', 'local')
+    ship_countries = region_config.get('ship_regions', {}).get('countries', [])
+    
     if not config.get('enabled', True):
-        print("自动匹配未启用")
+        print("自动匹配未启用 | Auto matching disabled")
         return []
     
     print(f"\n🔍 [{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 开始搜索匹配...")
     print(f"   卖家: {catalog.get('seller_name')}")
+    print(f"   所在国家: {seller_country}")
     print(f"   产品数: {len(catalog.get('products', []))}")
-    print(f"   可发货区域: {', '.join(region_config.get('ship_regions', {}).get('enabled', []))}")
+    
+    # 显示发货模式
+    if ship_mode == "global":
+        print(f"   发货模式: 🌍 全球发货")
+    elif ship_mode == "local":
+        print(f"   发货模式: 📍 本国发货 ({seller_country})")
+    else:
+        print(f"   发货模式: 🌐 区域发货 ({len(ship_countries)} 个国家)")
     
     # 获取求购信息
     posts = search_requests()
-    print(f"   求购信息: {len(posts)} 条")
+    print(f"   求购信息: {len(posts)} 条 | Buyer requests")
     
     matches = []
     region_filtered = []
@@ -245,8 +275,8 @@ def run_match():
             if not product.get('active', True):
                 continue
             
-            # 先检查区域匹配
-            can_ship, ship_reason = can_ship_to_region(buyer_region, region_config)
+            # 先检查区域匹配（全球卖家视角）
+            can_ship, ship_reason = can_ship_to_region(buyer_region, region_config, seller_country)
             
             if not can_ship:
                 region_filtered.append({
