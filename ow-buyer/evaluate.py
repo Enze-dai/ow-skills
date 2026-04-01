@@ -3,6 +3,7 @@
 全球采购招投标评标脚本
 计算五维度综合得分并排序
 评标完成后自动通知买家机器人
+展示卖家信用信息
 """
 
 import json
@@ -12,6 +13,19 @@ from datetime import datetime
 from typing import Dict, List, Any
 
 STATE_DIR = pathlib.Path(__file__).resolve().parent.parent / "state"
+
+# 导入信用系统
+SHARED_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent / "shared"
+sys.path.insert(0, str(SHARED_DIR))
+try:
+    from credit_system import (
+        format_seller_credit_display,
+        get_credit_warning,
+        get_seller_profile
+    )
+    CREDIT_SYSTEM_ENABLED = True
+except ImportError:
+    CREDIT_SYSTEM_ENABLED = False
 
 def calculate_price_score(bids: List[Dict]) -> Dict[str, float]:
     """计算价格得分 (权重50%)"""
@@ -145,6 +159,7 @@ def evaluate_bids(req_id: str, notify_buyer: bool = True) -> Dict[str, Any]:
         results.append({
             "bid_id": bid_id,
             "supplier": bid["supplier"]["name"],
+            "supplier_id": bid["supplier"].get("agent_id", bid["supplier"]["name"]),
             "price": bid["price"]["amount"],
             "price_score": price_scores.get(bid_id, 0),
             "media_score": media_scores.get(bid_id, 0),
@@ -207,6 +222,21 @@ def format_result(result: Dict) -> str:
         output += f"   ├─ 📸 展示：{len(bid.get('images', []))}图+{'有视频' if bid.get('video') else '无视频'} (得分 {bid['media_score']:.1f}/15)\n"
         output += f"   ├─ 🚚 时效：{bid['delivery_days']}天 (得分 {bid['delivery_score']:.1f}/5)\n"
         output += f"   └─ 📋 信誉：{bid['reputation'].get('total_transactions', 0)}笔成交 (得分 {bid['reputation_score']:.1f}/10)\n"
+        
+        # 🛡️ 添加信用展示
+        if CREDIT_SYSTEM_ENABLED:
+            try:
+                seller_id = bid.get('supplier_id', bid['supplier'])
+                credit_display = format_seller_credit_display(seller_id)
+                warning = get_credit_warning(seller_id, "seller")
+                output += f"\n   ─── 信用信息 ───\n"
+                for line in credit_display.strip().split('\n'):
+                    output += f"   {line}\n"
+                if warning:
+                    output += f"   {warning}\n"
+            except Exception as e:
+                output += f"   ⚠️ 信用信息获取失败: {e}\n"
+        
         output += "\n"
     
     if result.get("notification_sent"):

@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
-OW Seller 自动搜索匹配脚本 V2.2
+OW Seller 自动搜索匹配脚本 V2.4
 全球卖家版本 - 卖家自己选择发货区域（本国/全球/指定国家）
+集成信用系统 - 展示买家信用信息
 
 功能：
 1. 搜索OW社区求购信息
 2. 智能匹配产品清单
 3. 区域匹配 - 根据卖家配置的发货范围筛选买家
 4. 通知卖家新商机
+5. 展示买家信用和风险提醒
 
 发货模式：
 - local: 本国发货，只匹配本国买家
@@ -18,6 +20,7 @@ OW Seller 自动搜索匹配脚本 V2.2
 import json
 import urllib.request
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -26,6 +29,19 @@ CATALOG_FILE = STATE_DIR / "product_catalog.json"
 REGION_FILE = STATE_DIR / "region_config.json"
 MATCH_LOG_FILE = STATE_DIR / "match_log.json"
 OW_API = "http://www.owshanghai.com/api/posts?type=request&limit=50"
+
+# 导入信用系统
+SHARED_DIR = Path(__file__).parent.parent.parent.parent / "shared"
+sys.path.insert(0, str(SHARED_DIR))
+try:
+    from credit_system import (
+        format_buyer_credit_display,
+        get_credit_warning,
+        get_buyer_profile
+    )
+    CREDIT_SYSTEM_ENABLED = True
+except ImportError:
+    CREDIT_SYSTEM_ENABLED = False
 
 # IP区域映射（简化版）
 IP_REGION_MAP = {
@@ -323,12 +339,26 @@ def run_match():
                     print(f"   发货状态: ✅ {ship_reason}")
                     print(f"   关键词: {', '.join(matched_keywords)}")
                     
+                    # 🛡️ 展示买家信用
+                    if CREDIT_SYSTEM_ENABLED:
+                        try:
+                            buyer_id = post.get('agent_id', post.get('agent_name'))
+                            credit_display = format_buyer_credit_display(buyer_id)
+                            warning = get_credit_warning(buyer_id, "buyer")
+                            print(f"\n   ─── 🛡️ 买家信用信息 ───")
+                            for line in credit_display.strip().split('\n'):
+                                print(f"   {line}")
+                            if warning:
+                                print(f"   {warning}")
+                        except Exception as e:
+                            print(f"   ⚠️ 信用信息获取失败: {e}")
+                    
                     # 🔔 创建商机通知（提醒卖家机器人）
                     try:
                         from opportunity_notify import create_opportunity_notification
                         notification = create_opportunity_notification(match_info)
                         if notification.get('delivered', False):
-                            print(f"   🔔 已通知卖家机器人")
+                            print(f"\n   🔔 已通知卖家机器人")
                         
                         # 检查是否开启自动投标
                         if config.get('auto_bid_enabled', False):

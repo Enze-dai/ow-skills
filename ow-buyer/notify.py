@@ -8,10 +8,12 @@ OW Buyer 中标提醒系统
 2. 当有新投标时，通知买家机器人
 3. 当评标完成并列出前三时，通知买家机器人
 4. 当买家确认中标时，通知买家机器人最终结果
+5. 展示卖家信用信息
 """
 
 import json
 import pathlib
+import sys
 from datetime import datetime
 from typing import Dict, Any
 
@@ -19,6 +21,19 @@ STATE_DIR = pathlib.Path(__file__).resolve().parent.parent / "state"
 BIDS_DIR = STATE_DIR / "bids"
 REQUIREMENTS_DIR = STATE_DIR / "requirements"
 NOTIFICATIONS_DIR = STATE_DIR / "notifications"
+
+# 导入信用系统
+SHARED_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent / "shared"
+sys.path.insert(0, str(SHARED_DIR))
+try:
+    from credit_system import (
+        format_seller_credit_display,
+        get_credit_warning,
+        format_buyer_credit_display
+    )
+    CREDIT_SYSTEM_ENABLED = True
+except ImportError:
+    CREDIT_SYSTEM_ENABLED = False
 
 # 买家机器人通知配置
 BUYER_BOT_CONFIG = {
@@ -51,7 +66,7 @@ def create_notification(req_id: str, notification_type: str, data: Dict) -> Dict
 
 def format_new_bid_notification(req_id: str, bid: Dict) -> str:
     """格式化新投标通知"""
-    return f"""
+    msg = f"""
 🔔 新投标提醒 | New Bid Received
 
 需求ID: {req_id}
@@ -62,6 +77,20 @@ def format_new_bid_notification(req_id: str, bid: Dict) -> str:
 
 💡 已收到投标，等待更多投标后开始评标...
 """
+    
+    # 🛡️ 添加卖家信用展示
+    if CREDIT_SYSTEM_ENABLED:
+        try:
+            seller_id = bid["supplier"].get("agent_id", bid["supplier"]["name"])
+            credit_display = format_seller_credit_display(seller_id)
+            warning = get_credit_warning(seller_id, "seller")
+            msg += f"\n─── 🛡️ 卖家信用信息 ───{credit_display}"
+            if warning:
+                msg += f"\n{warning}\n"
+        except Exception as e:
+            msg += f"\n⚠️ 信用信息获取失败: {e}\n"
+    
+    return msg
 
 def format_evaluation_notification(req_id: str, result: Dict) -> str:
     """格式化评标完成通知"""
@@ -84,8 +113,22 @@ def format_evaluation_notification(req_id: str, result: Dict) -> str:
         msg += f"{medal} 第{i+1}名：{bid['supplier']} | 综合得分 {bid['total_score']}\n"
         msg += f"   ├─ 价格：¥{bid['price']} (得分 {bid['price_score']:.1f}/50)\n"
         msg += f"   ├─ 真品：{len(bid.get('auth_docs', []))}项 (得分 {bid['auth_score']:.1f}/20)\n"
-        msg += f"   ├─ 时效：{bid['delivery_days']}天 (得分 {bid['delivery_score']:.1f}/10)\n"
-        msg += f"   └─ 信誉：{bid['reputation'].get('total_transactions', 0)}笔 (得分 {bid['reputation_score']:.1f}/20)\n\n"
+        msg += f"   ├─ 时效：{bid['delivery_days']}天 (得分 {bid['delivery_score']:.1f}/5)\n"
+        msg += f"   └─ 信誉：{bid['reputation'].get('total_transactions', 0)}笔 (得分 {bid['reputation_score']:.1f}/10)\n"
+        
+        # 🛡️ 添加信用展示
+        if CREDIT_SYSTEM_ENABLED:
+            try:
+                seller_id = bid.get('supplier_id', bid['supplier'])
+                profile = get_seller_profile(seller_id) if 'get_seller_profile' in dir() else None
+                if profile and profile.get('transaction_count', 0) >= 3:
+                    credit_score = profile.get('信用分', 0)
+                    level = profile.get('信用等级', ('', '', ''))[0] if profile.get('信用等级') else ''
+                    msg += f"   🛡️ 信用：{level} ({credit_score}分)\n"
+            except:
+                pass
+        
+        msg += "\n"
     
     msg += """
 ⚠️ 请确认中标供应商，回复：

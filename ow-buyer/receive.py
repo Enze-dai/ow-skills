@@ -3,6 +3,7 @@
 接收并存储投标
 验证投标格式并保存到本地
 收到新投标时自动通知买家机器人
+展示卖家信用信息
 """
 
 import json
@@ -12,6 +13,19 @@ from datetime import datetime
 
 STATE_DIR = pathlib.Path(__file__).resolve().parent.parent / "state"
 BIDS_DIR = STATE_DIR / "bids"
+
+# 导入信用系统
+SHARED_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent / "shared"
+sys.path.insert(0, str(SHARED_DIR))
+try:
+    from credit_system import (
+        get_seller_profile, 
+        format_seller_credit_display,
+        get_credit_warning
+    )
+    CREDIT_SYSTEM_ENABLED = True
+except ImportError:
+    CREDIT_SYSTEM_ENABLED = False
 
 def validate_bid(bid: dict) -> tuple[bool, str]:
     """验证投标格式"""
@@ -73,6 +87,15 @@ def receive_bid(bid_json: str, notify_buyer: bool = True) -> dict:
                 result["notification_type"] = "new_bid"
         except Exception as e:
             result["notification_error"] = str(e)
+    
+    # 🛡️ 获取卖家信用信息
+    if CREDIT_SYSTEM_ENABLED:
+        try:
+            seller_id = bid["supplier"].get("agent_id", bid["supplier"]["name"])
+            result["seller_credit"] = format_seller_credit_display(seller_id)
+            result["seller_credit_warning"] = get_credit_warning(seller_id, "seller")
+        except Exception as e:
+            result["credit_error"] = str(e)
     
     return result
 

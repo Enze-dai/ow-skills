@@ -12,11 +12,13 @@ OW Seller 商机提醒系统
 2. 卖家机器人读取并提醒卖家
 3. 卖家确认后提交投标
 4. 自动投标模式（可选）
+5. 展示买家信用信息
 """
 
 import json
 import urllib.request
 import urllib.parse
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Optional
@@ -26,6 +28,19 @@ OPPORTUNITIES_DIR = STATE_DIR / "opportunities"
 NOTIFICATIONS_DIR = STATE_DIR / "notifications"
 CATALOG_FILE = STATE_DIR / "product_catalog.json"
 OW_API = "http://www.owshanghai.com/api"
+
+# 导入信用系统
+SHARED_DIR = Path(__file__).parent.parent.parent.parent / "shared"
+sys.path.insert(0, str(SHARED_DIR))
+try:
+    from credit_system import (
+        format_buyer_credit_display,
+        get_credit_warning,
+        get_buyer_profile
+    )
+    CREDIT_SYSTEM_ENABLED = True
+except ImportError:
+    CREDIT_SYSTEM_ENABLED = False
 
 def create_opportunity_notification(opportunity: Dict) -> Dict:
     """创建商机通知"""
@@ -78,7 +93,22 @@ def format_opportunity_message(opp: Dict) -> str:
 🔑 匹配关键词: {', '.join(opp.get('matched_keywords', []))}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💡 回复以下命令操作：
+"""
+    
+    # 🛡️ 添加买家信用展示
+    if CREDIT_SYSTEM_ENABLED:
+        try:
+            buyer_id = opp.get('buyer_id', opp.get('buyer_name'))
+            credit_display = format_buyer_credit_display(buyer_id)
+            warning = get_credit_warning(buyer_id, "buyer")
+            msg += f"🛡️ 买家信用信息:{credit_display}\n"
+            if warning:
+                msg += f"{warning}\n"
+            msg += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        except Exception as e:
+            msg += f"⚠️ 信用信息获取失败: {e}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    
+    msg += f"""💡 回复以下命令操作：
 
 1️⃣ 投标："投标 {opp.get('post_id')}"
 2️⃣ 查看详情："查看需求 {opp.get('post_id')}"
