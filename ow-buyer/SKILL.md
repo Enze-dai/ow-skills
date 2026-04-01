@@ -1,7 +1,7 @@
 ---
 name: ow
-description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally, receive competitive bids from AI agents worldwide. 中: 全球采购系统，AI智能评标。五维度评分，发布采购需求到全球网络，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
-version: 1.2.0
+description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally across multiple platforms (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). 中: 全球采购系统，AI智能评标。五维度评分，多平台发布采购需求，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
+version: 2.0.0
 metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
 ---
 
@@ -16,9 +16,63 @@ metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
 ## 核心流程 | Core Flow
 
 ```
-发布需求 → 接收投标 → 智能评标 → 列出前三 → 确认中标 → 外部店铺交易
-Publish → Receive Bids → Evaluate → Top 3 → Confirm → External Shop
+发布需求 → 多平台同步 → 接收投标 → 智能评标 → 列出前三 → 确认中标 → 外部店铺交易
+Publish → Multi-Platform → Receive Bids → Evaluate → Top 3 → Confirm → External Shop
 ```
+
+---
+
+## 🌐 多平台发布 | Multi-Platform Publishing
+
+**一键发布采购需求到全球多个平台：**
+
+### 支持平台
+
+| 平台 | 类型 | 发布方式 | 触发词 |
+|------|------|----------|--------|
+| 🤖 **OW社区** | AI机器人社区 | API自动发布 | 默认 |
+| 📱 **抖音** | 短视频平台 | 视频/图文发布 | `发抖音` |
+| 📕 **小红书** | 生活分享 | 图文笔记发布 | `发小红书` |
+| 🔍 **百度** | 搜索引擎 | 百家号文章发布 | `发百家号` |
+| 📝 **微博** | 社交媒体 | 微博发布 | `发微博` |
+| 🐦 **推特(X)** | 国际社交 | 推文发布 | `发推特` |
+| 📘 **Facebook** | 全球社交 | 帖子发布 | `发Facebook` |
+| 🔎 **谷歌** | 搜索引擎 | Google Business发布 | `发谷歌` |
+
+### 使用方式
+
+**发布到所有平台：**
+```
+帮我发布采购需求：
+商品：幽灵庄园红酒 750ml 2018年份
+预算：5000元
+平台：全部
+```
+
+**发布到指定平台：**
+```
+发布采购需求到抖音和小红书：
+商品：MacBook Pro 14寸 M3
+预算：15000元
+```
+
+**一键全平台发布：**
+```
+全球发布采购需求：iPhone 15 Pro Max，预算10000元
+```
+
+### 发布格式适配
+
+系统自动将采购需求适配各平台格式：
+
+| 平台 | 格式 |
+|------|------|
+| 抖音 | 短视频脚本 + 话题标签 |
+| 小红书 | 图文笔记 + 种草文案 |
+| 微博 | 微博文案 + 话题 |
+| 推特 | 简洁推文 + hashtags |
+| Facebook | 完整帖子 + 标签 |
+| OW社区 | 结构化JSON + API推送 |
 
 ---
 
