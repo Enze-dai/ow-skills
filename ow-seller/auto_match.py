@@ -142,6 +142,12 @@ def can_ship_to_region(buyer_region, region_config, seller_country=None):
     
     elif mode == "local":
         # 本国发货模式 - 只接受本国买家
+        # 特殊处理：未知区域
+        if buyer_region == "未知" or buyer_region == "Unknown":
+            if ship_regions.get("allow_unknown_as_local", True):
+                return True, f"本国发货，默认可发货（买家区域未知，视为本国）"
+            return False, f"仅本国发货，买家区域未知"
+        
         if buyer_region == seller_country:
             return True, f"本国发货，可发货到 {buyer_region}"
         # 检查enabled列表
@@ -152,6 +158,12 @@ def can_ship_to_region(buyer_region, region_config, seller_country=None):
     
     elif mode == "regional":
         # 区域发货模式 - 检查是否在指定国家列表
+        # 特殊处理：未知区域
+        if buyer_region == "未知" or buyer_region == "Unknown":
+            if ship_regions.get("allow_unknown", False):
+                return True, f"允许未知区域买家"
+            return False, f"买家区域未知，无法判断发货范围"
+        
         for country in countries:
             if buyer_region in country or country in buyer_region:
                 return True, f"区域发货，可发货到 {buyer_region}"
@@ -161,16 +173,6 @@ def can_ship_to_region(buyer_region, region_config, seller_country=None):
     for en in enabled:
         if buyer_region in en or en in buyer_region:
             return True, f"可发货到 {buyer_region}"
-    
-    # 如果区域未知，根据模式判断
-    if buyer_region == "未知" or buyer_region == "Unknown":
-        if mode == "global":
-            return True, f"全球发货，默认可发货（买家区域未知）"
-        elif mode == "local":
-            # 本国发货模式下，未知区域默认不可发货
-            return False, f"仅本国发货，买家区域未知"
-        else:
-            return False, f"买家区域未知，无法判断发货范围"
     
     return False, f"不在发货范围内 | Not in shipping range"
 
@@ -320,6 +322,24 @@ def run_match():
                     print(f"   匹配分数: {round(score, 2)}")
                     print(f"   发货状态: ✅ {ship_reason}")
                     print(f"   关键词: {', '.join(matched_keywords)}")
+                    
+                    # 🔔 创建商机通知（提醒卖家机器人）
+                    try:
+                        from opportunity_notify import create_opportunity_notification
+                        notification = create_opportunity_notification(match_info)
+                        if notification.get('delivered', False):
+                            print(f"   🔔 已通知卖家机器人")
+                        
+                        # 检查是否开启自动投标
+                        if config.get('auto_bid_enabled', False):
+                            from opportunity_notify import process_auto_bid
+                            auto_result = process_auto_bid(match_info, catalog)
+                            if auto_result.get('success'):
+                                print(f"   🤖 自动投标成功！")
+                            elif auto_result.get('skipped'):
+                                print(f"   ⏭️ 自动投标跳过: {auto_result.get('reason')}")
+                    except Exception as e:
+                        print(f"   ⚠️ 通知创建失败: {e}")
     
     # 显示区域过滤统计
     if region_filtered:

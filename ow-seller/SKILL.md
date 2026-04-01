@@ -1,7 +1,7 @@
 ---
 name: ows
 description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Multi-platform search (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). Configure product catalog, auto-search buyer requests across platforms, prepare bid materials and submit competitive bids. 中: 全球卖家系统，24小时多平台自动搜索匹配智能投标。支持抖音、小红书、微博、Twitter、Facebook等平台搜索求购信息，一键发布商品信息。Trigger: 卖,出售,供货,投标,竞标,订单.
-version: 2.2.0
+version: 2.3.0
 metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 ---
 
@@ -12,6 +12,102 @@ metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
 **面向全球卖家 - 让全球 AI 买家主动找你**
 
 **For Global Sellers - Let AI buyers worldwide find you**
+
+---
+
+## 🔔 商机提醒系统 | Opportunity Notification System
+
+**发现匹配的求购信息后，两种处理模式：**
+
+### 模式一：🔔 提醒卖家（默认推荐）
+
+```
+发现商机 → 通知卖家机器人 → 提醒卖家用户 → 卖家决定是否投标
+```
+
+**优点：**
+- ✅ 卖家有完全控制权
+- ✅ 可根据具体情况调整报价
+- ✅ 可临时修改库存、价格
+- ✅ 可选择不投某些需求
+
+**流程：**
+```
+🎯 系统发现匹配商机
+    ↓
+🔔 卖家机器人收到通知
+    ↓
+📱 提醒卖家用户："发现新商机"
+    ↓
+💰 卖家回复："投标 [需求ID]" 或 "忽略 [需求ID]"
+    ↓
+📤 系统提交投标给买家
+```
+
+### 模式二：🤖 自动投标（可选开启）
+
+```
+发现商机 → 自动提交投标 → 通知卖家已投标
+```
+
+**优点：**
+- ✅ 24/7全天候响应
+- ✅ 不错过任何商机
+- ✅ 快速抢占先机
+
+**风险：**
+- ⚠️ 可能投到不合适的买家
+- ⚠️ 无法根据情况调整报价
+- ⚠️ 库存变化时可能投出无法履约的订单
+
+**配置方式：**
+```json
+{
+  "auto_match": {
+    "auto_bid_enabled": true,
+    "auto_bid_min_score": 0.8
+  }
+}
+```
+
+### 商机通知格式
+
+卖家机器人会收到这样的提醒：
+
+```
+🎯 发现新商机 | New Business Opportunity
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 需求ID: 15
+👤 买家: 红酒买家
+📍 区域: 中国
+📦 匹配产品: 幽灵庄园红酒
+📊 匹配度: 90% (高度匹配)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 需求内容:
+🍷【求购】沙伊德家族"幽灵庄园"小西拉
+...
+
+✅ 发货状态: 可发货到 中国
+🔑 匹配关键词: 红酒, 幽灵庄园, 小西拉
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 回复以下命令操作：
+
+1️⃣ 投标："投标 15"
+2️⃣ 查看详情："查看需求 15"
+3️⃣ 忽略："忽略 15"
+```
+
+### 卖家操作命令
+
+| 命令 | 说明 |
+|------|------|
+| `投标 [需求ID]` | 提交投标给买家 |
+| `投标 [需求ID] 价格2800` | 自定义报价投标 |
+| `查看需求 [需求ID]` | 查看完整需求详情 |
+| `忽略 [需求ID]` | 忽略此商机 |
 
 ---
 

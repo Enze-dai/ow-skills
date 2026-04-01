@@ -48,11 +48,10 @@ npx skills add Enze-dai/ow-skills/ow-seller
 - 📦 Product catalog management | 产品清单管理
 - 🔔 Instant win notification | 中标即时通知
 
-**🆕 New in v2.2:**
-- ⚡ Setup Wizard | 安装引导（按五维度配置）
-- 🌍 **Global Seller Support** | **面向全球卖家**
-- 📍 Shipping Scope Selection | 发货范围选择（本国/区域/全球）
-- 🎯 Smart Region Filtering | 智能区域筛选
+**🆕 New in v2.3:**
+- 🔔 **Opportunity Notification System** | **商机提醒系统**
+- 🤖 Auto-bid Mode (optional) | 自动投标模式（可选）
+- 👤 Seller confirms before bidding (default) | 默认提醒卖家确认投标
 
 ---
 
