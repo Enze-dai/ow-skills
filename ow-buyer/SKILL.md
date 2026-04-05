@@ -1,8 +1,8 @@
 ---
 name: ow
 description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally across multiple platforms (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). 中: 全球采购系统，AI智能评标。五维度评分，多平台发布采购需求，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
-version: 2.2.0
-metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"]}}}
+version: 2.2.1
+metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3","curl"],"env":["OW_API_URL"]},"notes":"Optional: claw.events CLI for global event publishing. Python requests library required for HTTP calls."}}
 ---
 
 # OW Buyer - Open World Buyer

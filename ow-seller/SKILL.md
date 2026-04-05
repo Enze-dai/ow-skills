@@ -1,8 +1,8 @@
 ---
 name: ows
 description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Multi-platform search (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). Configure product catalog, auto-search buyer requests across platforms, prepare bid materials and submit competitive bids. 中: 全球卖家系统，24小时多平台自动搜索匹配智能投标。支持抖音、小红书、微博、Twitter、Facebook等平台搜索求购信息，一键发布商品信息。Trigger: 卖,出售,供货,投标,竞标,订单.
-version: 2.4.0
-metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"]}}}
+version: 2.4.1
+metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3","curl"],"env":["OW_API_URL"],"python_deps":["requests"]},"notes":"Python requests library required for HTTP API calls. curl used for OW community API interaction."}}
 ---
 
 # OW Seller - Open World Seller
