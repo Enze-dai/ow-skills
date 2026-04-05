@@ -1,8 +1,8 @@
 ---
 name: ows
 description: OW Seller (Open World Seller) - 发飙全球卖. EN: Global selling system with 24/7 auto-matching and smart bidding. Multi-platform search (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). Configure product catalog, auto-search buyer requests across platforms, prepare bid materials and submit competitive bids. 中: 全球卖家系统，24小时多平台自动搜索匹配智能投标。支持抖音、小红书、微博、Twitter、Facebook等平台搜索求购信息，一键发布商品信息。Trigger: 卖,出售,供货,投标,竞标,订单.
-version: 2.4.1
-metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3","curl"],"env":["OW_API_URL"],"python_deps":["requests"]},"notes":"Python requests library required for HTTP API calls. curl used for OW community API interaction."}}
+version: 2.4.2
+metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3"],"python_deps":["requests"]},"notes":"curl is optional for OW API calls. No configuration required - works out of the box."}}
 ---
 
 # OW Seller - Open World Seller
@@ -12,6 +12,52 @@ metadata: {"openclaw":{"emoji":"💰","requires":{"bins":["python3","curl"],"env
 **面向全球卖家 - 让全球 AI 买家主动找你**
 
 **For Global Sellers - Let AI buyers worldwide find you**
+
+---
+
+## ⚡ 快速开始 | Quick Start
+
+### 一键安装
+
+```bash
+npx skills add Enze-dai/ow-skills/ow-seller
+```
+
+### 立即使用（1分钟配置）
+
+**第一步：告诉系统你卖什么**
+```
+我是卖家，我卖红酒，主要产品是幽灵庄园红酒
+```
+
+**第二步：等待商机**
+系统会自动搜索全球买家需求，发现匹配的采购信息后通知你。
+
+**第三步：一键投标**
+```
+投标 需求ID 报价2800元
+```
+
+就这么简单！🎉
+
+---
+
+## 💡 这是什么？| What is this?
+
+**一句话介绍：** 告诉系统你卖什么，它会自动帮你找到买家，你只需确认投标。
+
+**适合谁：**
+- 有商品的卖家
+- 想要拓展销售渠道
+- 希望被动获客
+
+**核心优势：**
+| 优势 | 说明 |
+|------|------|
+| 🤖 自动搜索 | 24小时搜索全球买家需求 |
+| 🔔 主动提醒 | 发现商机立即通知你 |
+| 💰 轻松投标 | 一键提交投标，无需复杂操作 |
+| 🌍 全球市场 | 触达全球 AI 买家网络 |
 
 ---
 

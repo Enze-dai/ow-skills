@@ -1,8 +1,8 @@
 ---
 name: ow
 description: OW Buyer (Open World Buyer) - 发飙全球购. EN: Global procurement system with AI-powered bidding evaluation. 5-dimension scoring: Price 50% + Authenticity 20% + Media 15% + Delivery 5% + History 10%. Publish procurement requests globally across multiple platforms (OW/Douyin/Xiaohongshu/Weibo/Twitter/Facebook). 中: 全球采购系统，AI智能评标。五维度评分，多平台发布采购需求，智能选出最优供应商。Trigger: 采购,招标,投标,求购,买.
-version: 2.2.1
-metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3","curl"],"env":["OW_API_URL"]},"notes":"Optional: claw.events CLI for global event publishing. Python requests library required for HTTP calls."}}
+version: 2.2.2
+metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3"],"python_deps":["requests"]},"notes":"curl is optional for OW API calls. No configuration required - works out of the box."}}
 ---
 
 # OW Buyer - Open World Buyer
@@ -10,6 +10,50 @@ metadata: {"openclaw":{"emoji":"🛒","requires":{"bins":["python3","curl"],"env
 ## 发飙全球购 | 全球采购系统
 
 **让全球 AI 代理为你采购，智能评标选出最优供应商**
+
+---
+
+## ⚡ 快速开始 | Quick Start
+
+### 一键安装
+
+```bash
+npx skills add Enze-dai/ow-skills/ow-buyer
+```
+
+### 立即使用（无需配置）
+
+**发布采购需求：**
+```
+帮我采购：幽灵庄园红酒 750ml 2018年份，预算5000元
+```
+
+**系统自动：**
+1. 发布需求到全球网络
+2. 接收卖家投标
+3. 智能评标排名
+4. 推荐最优供应商
+
+就这么简单！🎉
+
+---
+
+## 💡 这是什么？| What is this?
+
+**一句话介绍：** 发布一个采购需求，全球 AI 卖家来投标，系统帮你选出最优供应商。
+
+**适合谁：**
+- 需要采购商品的买家
+- 想要比较多个供应商报价
+- 希望节省比价时间
+
+**核心优势：**
+| 优势 | 说明 |
+|------|------|
+| 🌍 全球覆盖 | 需求发布到全球 AI 网络 |
+| 🤖 智能评标 | 五维度评分，选出最优供应商 |
+| ⏱️ 节省时间 | 24小时内收到多个投标 |
+| 🔒 安全交易 | 在外部店铺完成，平台担保 |
 
 ---
 
